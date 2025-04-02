@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>偏导数与切平面可视化教学</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- 引入MathJax库用于渲染数学公式 -->
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+</head>
+<body>
+    <header>
+        <h1>偏导数与切平面</h1>
+        <nav>
+            <ul>
+                <li><a href="#concepts">基本概念</a></li>
+                <li><a href="#visualization">可视化探索</a></li>
+                <li><a href="#interactive">交互式学习</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="concepts" class="section">
+            <h2>基本概念</h2>
+            <div class="concept-container">
+                <div class="concept-item">
+                    <h3>偏导数的定义</h3>
+                    <p>偏导数是多变量函数对单个变量的导数，保持其他变量不变。</p>
+                    <ul>
+                        <li>对于二元函数z = f(x, y)，其关于x的偏导数f<sub>x</sub>表示在y固定时，z对x的变化率</li>
+                        <li>类似地，f<sub>y</sub>表示在x固定时，z对y的变化率</li>
+                        <li>高阶偏导数包括f<sub>xx</sub>、f<sub>xy</sub>、f<sub>yx</sub>和f<sub>yy</sub>等</li>
+                    </ul>
+                    <div class="math-formula">
+                        <p>$$\frac{\partial f}{\partial x}(x,y) = \lim_{h \to 0} \frac{f(x+h,y) - f(x,y)}{h}$$</p>
+                        <p>$$\frac{\partial f}{\partial y}(x,y) = \lim_{h \to 0} \frac{f(x,y+h) - f(x,y)}{h}$$</p>
+                    </div>
+                </div>
+
+                <div class="concept-item">
+                    <h3>几何意义</h3>
+                    <p>偏导数具有重要的几何意义：</p>
+                    <ul>
+                        <li>\(\frac{\partial f}{\partial x}\) 在y方向固定时的斜率，\(\frac{\partial f}{\partial y}\) 在x方向固定时的斜率</li>
+                        <li>函数在点\(x_0, y_0\)处的切平面方程为：</li>
+                    </ul>
+                    <div class="math-formula">
+                        <p>$$z = f(x_0,y_0) + \frac{\partial f}{\partial x}(x_0,y_0)(x - x_0) + \frac{\partial f}{\partial y}(x_0,y_0)(y - y_0)$$</p>
+                    </div>
+                </div>
+
+                <div class="concept-item">
+                    <h3>线性近似与函数值局部变化</h3>
+                    <ul>
+                        <li>切平面是函数在点(x₀, y₀)处的线性近似</li>
+                        <li>可以用切平面来近似计算函数在(x₀, y₀)附近点的函数值</li>
+                    </ul>
+                </div>
+
+                <div class="concept-item">
+                    <h3>方向导数</h3>
+                    <ul>
+                        <li>函数在任意方向上的变化率</li>
+                        <li>方向导数的计算公式为 \(\nabla f \cdot \vec{u}\)，其中 \(\vec{u}\) 是单位向量，\(\nabla f\) 是梯度向量</li>
+                    </ul>
+                </div>
+
+                <div class="concept-item">
+                    <h3>梯度向量</h3>
+                    <ul>
+                        <li>梯度向量 \(\nabla f = \left\langle \frac{\partial f}{\partial x}, \frac{\partial f}{\partial y} \right\rangle\)</li>
+                        <li>梯度方向是函数增长最快的方向，其模长是最大增长率</li>
+                        <li>梯度垂直于等高线</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="visualization" class="section">
+            <h2>可视化探索</h2>
+            <div class="visualization-container">
+                <div class="visualization-controls">
+                    <div class="control-group">
+                        <h3>选择函数</h3>
+                        <select id="function-select">
+                            <option value="function1">f(x,y) = x² + y²</option>
+                            <option value="function2">f(x,y) = sin(x) + cos(y)</option>
+                            <option value="function3">f(x,y) = x² - y²</option>
+                            <option value="function4">f(x,y) = e^(-(x²+y²))</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <h3>选择点</h3>
+                        <div class="point-controls">
+                            <label for="x-value">x: </label>
+                            <input type="range" id="x-value" min="-3" max="3" step="0.1" value="1">
+                            <span id="x-value-display">1.0</span>
+                        </div>
+                        <div class="point-controls">
+                            <label for="y-value">y: </label>
+                            <input type="range" id="y-value" min="-3" max="3" step="0.1" value="1">
+                            <span id="y-value-display">1.0</span>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <h3>显示选项</h3>
+                        <div class="checkbox-controls">
+                            <input type="checkbox" id="show-surface" checked>
+                            <label for="show-surface">显示曲面</label>
+                        </div>
+                        <div class="checkbox-controls">
+                            <input type="checkbox" id="show-tangent-plane" checked>
+                            <label for="show-tangent-plane">显示切平面</label>
+                        </div>
+                        <div class="checkbox-controls">
+                            <input type="checkbox" id="show-gradient">
+                            <label for="show-gradient">显示梯度向量</label>
+                        </div>
+                        <div class="checkbox-controls">
+                            <input type="checkbox" id="show-contour">
+                            <label for="show-contour">显示等高线</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="visualization-display">
+                    <div id="3d-plot" class="plot-container"></div>
+                    <div id="contour-plot" class="plot-container"></div>
+                </div>
+                <div class="visualization-info">
+                    <div class="info-panel">
+                        <h3>函数信息</h3>
+                        <p>函数值: <span id="function-value">-</span></p>
+                        <p>偏导数 f<sub>x</sub>: <span id="fx-value">-</span></p>
+                        <p>偏导数 f<sub>y</sub>: <span id="fy-value">-</span></p>
+                        <p>切平面方程: <span id="tangent-plane-equation">-</span></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="interactive" class="section">
+            <h2>交互式学习</h2>
+            <div class="interactive-container">
+                <div class="interactive-item">
+                    <h3>切平面近似</h3>
+                    <p>探索切平面如何近似函数在选定点附近的值。</p>
+                    <div class="interactive-controls">
+                        <button id="add-point">添加比较点</button>
+                        <button id="clear-points">清除比较点</button>
+                    </div>
+                    <div id="approximation-table" class="data-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>点 (x,y)</th>
+                                    <th>实际函数值</th>
+                                    <th>切平面近似值</th>
+                                    <th>误差</th>
+                                </tr>
+                            </thead>
+                            <tbody id="approximation-data">
+                                <!-- 数据将通过JavaScript动态添加 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="interactive-item">
+                    <h3>方向导数探索</h3>
+                    <p>探索不同方向上的方向导数。</p>
+                    <div class="direction-controls">
+                        <label for="direction-angle">方向角度: </label>
+                        <input type="range" id="direction-angle" min="0" max="360" step="5" value="0">
+                        <span id="direction-angle-display">0°</span>
+                    </div>
+                    <div id="direction-derivative-value">
+                        <p>方向导数值: <span id="dir-derivative">-</span></p>
+                    </div>
+                    <div id="direction-plot" class="plot-container"></div>
+                </div>
+
+                <div class="interactive-item">
+                    <h3>曲率与近似精度</h3>
+                    <p>探索曲率如何影响切平面近似的精度。</p>
+                    <div class="curvature-controls">
+                        <button id="show-high-curvature">高曲率点</button>
+                        <button id="show-low-curvature">低曲率点</button>
+                    </div>
+                    <div id="curvature-comparison" class="plot-container"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>偏导数与切平面可视化教学 - 基于Three.js和D3.js的交互式学习工具</p>
+    </footer>
+
+    <!-- 引入必要的JavaScript库 -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/controls/OrbitControls.js"></script>
+    <script src="d3.v7.min.js"></script>
+    <script src="plotly-2.14.0.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
